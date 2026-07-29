@@ -9,15 +9,14 @@ export type Post = {
 }
 
 /**
- * beehiiv does not advertise the feed on the publication homepage, and the
- * usual paths are only live once the RSS feed is switched on in the
- * publication settings. So rather than hard coding one path, these are tried
- * in order and the first that parses as a feed wins.
- *
- * If Francisco enables RSS in beehiiv and the path turns out to be something
- * else, add it to the front of this list and nothing else needs to change.
+ * beehiiv serves the feed from its own rss subdomain, not from the
+ * publication's domain, and never advertises it on the publication homepage.
+ * The real endpoint is in content/site.ts. The paths after it are the ones
+ * beehiiv would use if that ever changes, tried in order, first one that
+ * parses as a feed wins.
  */
 const FEED_CANDIDATES = [
+  site.newsletter.feed,
   `${site.newsletter.url}/feed`,
   `${site.newsletter.url}/rss`,
   `${site.newsletter.url}/feed.xml`,
@@ -82,9 +81,10 @@ function itemsFrom(document: Record<string, unknown>): Post[] {
         title: textOf(item.title).trim(),
         url: textOf(item.link).trim(),
         date: normaliseDate(textOf(item.pubDate)),
-        excerpt: excerptFrom(
-          textOf(item['content:encoded']) || textOf(item.description),
-        ),
+        // description first: beehiiv puts the subtitle there and the whole
+        // article in content:encoded. The article bodies belong on beehiiv,
+        // not mirrored here.
+        excerpt: excerptFrom(textOf(item.description) || textOf(item['content:encoded'])),
       }),
     )
   }

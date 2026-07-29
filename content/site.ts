@@ -38,11 +38,13 @@ export const site = {
   // appear. Leave it null and the link is not rendered at all.
   cvPdf: null as string | null,
 
-  // Between Lines. See content/feed.ts for the RSS endpoint.
   newsletter: {
     name: 'Between Lines',
     url: 'https://betweenlines.beehiiv.com',
     archive: 'https://betweenlines.beehiiv.com/archive',
+    // From beehiiv, Settings then RSS Feed. This is the canonical endpoint;
+    // the publication's own domain does not serve one.
+    feed: 'https://rss.beehiiv.com/feeds/WYkdasktSa.xml',
   },
 
   social: [
