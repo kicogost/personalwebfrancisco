@@ -14,10 +14,9 @@ export const site = {
   description:
     'Francisco Gost. Founding chief of staff at RallyUp. Writes the Between Lines newsletter and builds small tools.',
 
-  // Set once in Cinzel caps, in the optical centre of the hero. Placeholder
-  // until Francisco chooses the final text. Use the interpunct as the
+  // Set once in Cinzel caps, top right of the hero. Use the interpunct as the
   // separator and keep it to two or three short words.
-  motto: 'AMOR · FATI',
+  motto: 'ACTA · NON · VERBA',
 
   // The hero renders this photograph as ASCII characters, which discards
   // almost all detail. It needs to read as clear light and dark shapes.
