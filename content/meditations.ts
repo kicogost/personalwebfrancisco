@@ -1,42 +1,49 @@
-// Lines from the Meditations of Marcus Aurelius, drawn from the George Long
-// translation of 1862, which is public domain. Trimmed to under fifteen words
-// each. One is shown in the footer, chosen by the day of the year.
+// Lines from the Meditations of Marcus Aurelius, adapted from the George Long
+// translation of 1862, which is public domain. Long writes in thee and thou;
+// these keep his wording and move the pronouns to modern English. Trimmed to
+// under fifteen words each.
 //
-// This is the whole of the stoic layer. It does not need anything else.
+// Anything added here should come from Long or another pre-1929 translation.
+// The widely quoted modern renderings, and most of what circulates on the
+// internet under Aurelius' name, are either under copyright or not in the text
+// at all.
+//
+// One is shown in the footer, chosen by the day of the year. This is the whole
+// of the stoic layer. It does not need anything else.
 
 export const meditations: string[] = [
-  'The universe is change; our life is what our thoughts make it.',
-  'Waste no more time arguing what a good man should be. Be one.',
-  'You have power over your mind, not over outside events.',
+  'The universe is transformation. Life is opinion.',
+  'No longer talk about what a good man ought to be. Be such.',
   'Confine yourself to the present.',
-  'Never let the future disturb you.',
-  'Loss is nothing else but change, and change is the delight of nature.',
-  'Everything we hear is an opinion, not a fact.',
-  'Everything we see is a perspective, not the truth.',
-  'Do every act of your life as if it were your last.',
-  'The best revenge is not to be like your enemy.',
-  'Look within. Within is the fountain of good.',
-  'Accept the things to which fate binds you.',
-  'Nothing happens to any man that he is not formed by nature to bear.',
-  'Reject your sense of injury and the injury itself disappears.',
-  'The soul becomes dyed with the colour of its thoughts.',
-  'How much time he gains who does not look to see what others say.',
-  'Be like the rocky headland on which the waves constantly break.',
-  'What is not good for the swarm is not good for the bee.',
-  'Whatever happens at all happens as it should.',
+  'Do not disturb yourself by thinking of the whole of your life at once.',
+  'Loss is nothing else than change, and change is the delight of nature.',
+  'Perform every act as if it were the last of your life.',
+  'The best way of avenging yourself is not to become like the wrongdoer.',
+  'Dig within. Within is the fountain of good.',
+  'Adapt yourself to the things among which your lot has been cast.',
+  'Love the people with whom your lot has been thrown.',
+  'Nothing happens to any man which he is not formed by nature to bear.',
   'Take away your opinion, and the complaint is taken away with it.',
-  'Very little is needed to make a happy life.',
-  'Time is a river of passing events, and its current is strong.',
-  'Adapt yourself to the things among which your lot is cast.',
-  'Love the people with whom fate has surrounded you.',
-  'It is not death a man should fear, but never beginning to live.',
+  'The soul is dyed by the thoughts.',
+  'How much trouble he avoids who does not look to see what his neighbour says.',
+  'Be like the promontory against which the waves continually break.',
+  'That which is not good for the swarm is not good for the bee.',
+  'Whatever happens at all happens as it should.',
+  'Very little is needed to live happily.',
+  'Time is a river of the events which happen, and its current is strong.',
   'Observe constantly that all things take place by change.',
-  'Begin the morning by saying to yourself: today I shall meet interference.',
-  'Nowhere can a man find a quieter retreat than in his own soul.',
-  'The happiness of your life depends upon the quality of your thoughts.',
+  'Begin the morning by saying to yourself: today I shall meet with the meddler.',
+  'Nowhere can a man retire with more quiet than into his own soul.',
   'Receive wealth without arrogance, and be ready to let it go.',
-  'The art of living is more like wrestling than dancing.',
+  'The art of life is more like the wrestler’s art than the dancer’s.',
   'Consider that everything is opinion, and opinion is in your power.',
+  'Whatever this is that I am, it is a little flesh and breath.',
+  'Everything harmonises with me which is harmonious to you, universe.',
+  'He who does wrong does wrong against himself.',
+  'Do not waste the remainder of your life in thoughts about other people.',
+  'The happiness of a man is to do the proper work of a man.',
+  'Death is a rest from the impressions of the senses.',
+  'Look at the past, and see how many changes of dynasty it has taken.',
 ]
 
 /**

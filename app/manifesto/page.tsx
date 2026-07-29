@@ -5,7 +5,8 @@ import { pageMetadata } from '@/lib/metadata'
 
 export const metadata: Metadata = pageMetadata({
   title: 'manifesto',
-  description: 'What Francisco Gost believes about the work.',
+  description:
+    'Hard work, systems over one-off outputs, and writing only about what you have actually done.',
   path: '/manifesto',
 })
 

@@ -13,11 +13,11 @@ export default function Home() {
         {site.name}. {site.role}, {site.location}.
       </h1>
 
-      {/* On desktop this is taken out of the flow so it sits in the optical
-          centre of the hero rather than the content column. On mobile there is
-          no room for that, so it stays in the flow between the nav and the
-          footer. */}
-      <p className="face-display text-center text-[clamp(1rem,7vw,1.5rem)] text-ink md:pointer-events-none md:fixed md:inset-0 md:z-10 md:flex md:-translate-y-[3vh] md:items-center md:justify-center md:px-8 md:pl-[var(--rail)] md:text-[clamp(1.25rem,3.2vw,2.25rem)]">
+      {/* On desktop this is taken out of the flow and pinned to the top right,
+          opposite the portrait, so it frames the hero rather than sitting on
+          top of the face. On mobile there is no room for a corner, so it stays
+          in the flow between the nav and the footer. */}
+      <p className="face-display text-center text-[clamp(1rem,7vw,1.5rem)] text-ink md:pointer-events-none md:fixed md:top-9 md:right-10 md:z-10 md:text-right md:text-[clamp(1rem,1.9vw,1.5rem)]">
         {site.motto}
       </p>
     </section>
