@@ -7,13 +7,17 @@ import { pageMetadata } from '@/lib/metadata'
 
 export const metadata: Metadata = pageMetadata({
   title: 'work',
-  description: `The working history of ${site.name}.`,
+  description: site.description,
   path: '/work',
 })
 
 export default function WorkPage() {
   return (
     <PageShell eyebrow="work" title="Work">
+      {/* The CV says where he has been. This says what he would do for you,
+          which is the thing anyone reading this page is actually after. */}
+      <p className="face-body measure -mt-2 mb-14 text-[1.25rem] leading-[1.6]">{site.pitch}</p>
+
       <ol className="border-t border-rule">
         {work.map((entry, index) => {
           const meta = [entry.role, entry.standing, entry.location].filter(Boolean).join(' · ')

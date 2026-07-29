@@ -11,8 +11,13 @@ export const site = {
   role: 'Founding Chief of Staff at RallyUp',
   location: 'Madrid',
 
+  // What someone would hire him for, in his own words. Rendered at the top of
+  // /work, which is where anyone deciding that actually lands.
+  pitch:
+    'I can build an AI-native customer success organisation from scratch, and make anyone go viral on LinkedIn in under 30 days.',
+
   description:
-    'Francisco Gost. Founding chief of staff at RallyUp. Writes the Between Lines newsletter and builds small tools.',
+    'Builds AI-native customer success organisations from scratch. Makes anyone go viral on LinkedIn in under 30 days.',
 
   // Set once in Cinzel caps, top right of the hero. Use the interpunct as the
   // separator and keep it to two or three short words.
