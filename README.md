@@ -100,9 +100,9 @@ Leave it as `null` and the download link disappears entirely.
 
 ### Swapping the photo
 
-Overwrite `public/francisco.jpg`, keeping the same filename. Both the hero and the small portrait read from it and no code changes.
+Overwrite `public/francisco.png`, keeping the same filename. Both the hero and the small portrait read from it and no code changes.
 
-That file currently holds a generated stand-in, not a real photograph. `content/site.ts` also carries `heroFallback` and `portraitFallback`, which only come into play if `francisco.jpg` is ever missing, so the page never renders a broken image.
+`content/site.ts` also carries `heroFallback` and `portraitFallback`. Those only come into play if `francisco.png` goes missing, so the page never renders a broken image.
 
 The hero renders the photo as ASCII characters, which throws away almost all detail. Pick something that reads as clear light and dark shapes when you squint at it. Faces work if the lighting is strong. Anything low contrast or busy turns to noise.
 

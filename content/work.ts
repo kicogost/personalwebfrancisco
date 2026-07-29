@@ -40,7 +40,7 @@ export const work: WorkEntry[] = [
     lines: [
       'Built the partnerships function from scratch.',
       'Sourced $500K in directly attributable closed-won revenue.',
-      // TODO: replace $XM with the real pipeline figure.
+      // The pipeline figure stays redacted on purpose. Not a placeholder.
       'Drove 100+ qualified meetings booked and $XM in pipeline.',
     ],
     proof: { label: 'proof of work', url: 'https://dcycle.io/partners/' },

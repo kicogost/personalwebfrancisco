@@ -22,12 +22,11 @@ export const site = {
   // The hero renders this photograph as ASCII characters, which discards
   // almost all detail. It needs to read as clear light and dark shapes.
   //
-  // public/francisco.jpg currently holds a generated stand-in at the right
-  // dimensions. Overwrite that one file with the real headshot, same name, and
-  // both the hero and the portrait pick it up with no code change. The
-  // fallbacks below only matter if that file is ever deleted.
-  heroImage: '/francisco.jpg',
-  portrait: '/francisco.jpg',
+  // Both the hero and the small portrait read from this one file. Overwrite it
+  // to change the photograph. The fallbacks below only matter if it goes
+  // missing, so the page never renders a broken image.
+  heroImage: '/francisco.png',
+  portrait: '/francisco.png',
   heroFallback: '/hero-placeholder.png',
   portraitFallback: '/portrait-placeholder.png',
 

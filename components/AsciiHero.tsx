@@ -26,7 +26,20 @@ export type AsciiHeroProps = {
   cursorStrength?: number
   /** Seconds for one full cool to warm and back again. */
   hueCycleSeconds?: number
+  /** Pushes cells away from mid grey before they are mapped to the ramp. */
+  contrast?: number
+  /**
+   * How close a cell has to be to the backdrop colour to fall away to paper.
+   * Only applies when the four corners of the image agree on a colour. Set to
+   * 0 to keep the backdrop.
+   */
+  keyTolerance?: number
   rampString?: string
+  /**
+   * 'contain' keeps the whole photograph in frame, which is what a portrait
+   * needs. 'cover' fills the viewport and crops, which suits a wide source.
+   */
+  fit?: 'contain' | 'cover'
   className?: string
 }
 
@@ -101,7 +114,10 @@ export default function AsciiHero({
   cursorRadius = 12,
   cursorStrength = 0.3,
   hueCycleSeconds = 90,
+  contrast = 1.35,
+  keyTolerance = 0.18,
   rampString = DEFAULT_RAMP,
+  fit = 'contain',
   className,
 }: AsciiHeroProps) {
   const isDev = process.env.NODE_ENV === 'development'
@@ -116,6 +132,8 @@ export default function AsciiHero({
     cursorRadius,
     cursorStrength,
     hueCycleSeconds,
+    contrast,
+    keyTolerance,
     rampString,
   })
 
@@ -129,6 +147,8 @@ export default function AsciiHero({
         cursorRadius,
         cursorStrength,
         hueCycleSeconds,
+        contrast,
+        keyTolerance,
         rampString,
       }
 
@@ -140,8 +160,14 @@ export default function AsciiHero({
   const liveRef = useRef(active)
   liveRef.current = active
 
-  // Only these two change the grid itself, so only these restart the effect.
-  const { columns: gridColumns, rampString: ramp } = active
+  // These change how the grid is sampled, so they restart the effect rather
+  // than being read per frame.
+  const {
+    columns: gridColumns,
+    rampString: ramp,
+    contrast: activeContrast,
+    keyTolerance: activeKeyTolerance,
+  } = active
 
   const rampCodes = useMemo(() => {
     const codes = new Uint16Array(ramp.length)
@@ -158,6 +184,8 @@ export default function AsciiHero({
     if (!ctx) return
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const contrast = activeContrast
+    const keyTolerance = activeKeyTolerance
 
     let layout: Layout | null = null
     let image: HTMLImageElement | null = null
@@ -207,21 +235,48 @@ export default function AsciiHero({
       const cellH = fontSize * heightRatio
       const rows = Math.max(2, Math.ceil(height / cellH))
 
-      // Cover fit, so the photograph fills the viewport rather than sitting in
-      // a letterbox.
       const gridAspect = (cols * cellW) / (rows * cellH)
       const imgAspect = image.width / image.height
-      let sw: number
-      let sh: number
-      if (imgAspect > gridAspect) {
-        sh = image.height
-        sw = sh * gridAspect
+
+      // Source rectangle, and where it lands in the grid. Cells are taller
+      // than they are wide, so the grid is not a square pixel space and every
+      // aspect comparison has to go through cellW / cellH.
+      let sx = 0
+      let sy = 0
+      let sw = image.width
+      let sh = image.height
+      let dx = 0
+      let dy = 0
+      let dw = cols
+      let dh = rows
+
+      if (fit === 'cover') {
+        // Crop the source to the shape of the viewport.
+        if (imgAspect > gridAspect) {
+          sh = image.height
+          sw = sh * gridAspect
+        } else {
+          sw = image.width
+          sh = sw / gridAspect
+        }
+        sx = (image.width - sw) / 2
+        sy = (image.height - sh) / 2
       } else {
-        sw = image.width
-        sh = sw / gridAspect
+        // Fit the whole source inside the grid. A portrait cropped to a wide
+        // viewport loses the head, and the ASCII pass has too little detail
+        // left to survive that.
+        const cellAspect = cellW / cellH
+        dh = rows
+        dw = (imgAspect * rows) / cellAspect
+        if (dw > cols) {
+          dw = cols
+          dh = (cols * cellAspect) / imgAspect
+        }
+        dx = Math.round((cols - dw) / 2)
+        dy = Math.round((rows - dh) / 2)
+        dw = Math.round(dw)
+        dh = Math.round(dh)
       }
-      const sx = (image.width - sw) / 2
-      const sy = (image.height - sh) / 2
 
       const off = document.createElement('canvas')
       off.width = cols
@@ -230,7 +285,12 @@ export default function AsciiHero({
       if (!octx) return null
       octx.imageSmoothingEnabled = true
       octx.imageSmoothingQuality = 'high'
-      octx.drawImage(image, sx, sy, sw, sh, 0, 0, cols, rows)
+      // A source with an alpha channel would otherwise read as black wherever
+      // it is transparent, which the ramp turns into a solid block of ink.
+      octx.fillStyle =
+        getComputedStyle(document.documentElement).getPropertyValue('--paper').trim() || '#fcfcfa'
+      octx.fillRect(0, 0, cols, rows)
+      octx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh)
 
       const total = cols * rows
       const data = octx.getImageData(0, 0, cols, rows).data
@@ -254,13 +314,89 @@ export default function AsciiHero({
         hueCos += Math.cos(rad) * s
       }
 
-      // A percentile stretch. ASCII throws away so much detail that a source
-      // sitting in the middle of the range turns to mush without it.
-      const sorted = Float32Array.from(lum).sort()
-      const lo = sorted[Math.floor(total * 0.02)]
-      const hi = sorted[Math.floor(total * 0.98)]
+      /** Normalised RGB distance between two cells, 0 to about 1.73. */
+      const colourDistance = (a: number, b: number) => {
+        const dr = (data[a * 4] - data[b * 4]) / 255
+        const dg = (data[a * 4 + 1] - data[b * 4 + 1]) / 255
+        const db = (data[a * 4 + 2] - data[b * 4 + 2]) / 255
+        return Math.sqrt(dr * dr + dg * dg + db * db)
+      }
+
+      // A studio headshot on a flat backdrop is the hard case: the backdrop
+      // often sits near mid luminance, so it maps to mid density characters
+      // and buries the face, which is close to the same luminance. Find that
+      // backdrop colour and let it fall away to paper.
+      //
+      // The four corners are not enough to identify it, because a subject's
+      // shoulders usually run off the bottom edge and take two corners with
+      // them. Sample the whole border and take the most common colour.
+      const inset = 2
+      const border: number[] = []
+      const stride = Math.max(1, Math.round(Math.max(dw, dh) / 60))
+      for (let x = dx + inset; x < dx + dw - inset; x += stride) {
+        border.push((dy + inset) * cols + x, (dy + dh - 1 - inset) * cols + x)
+      }
+      for (let y = dy + inset; y < dy + dh - inset; y += stride) {
+        border.push(y * cols + dx + inset, y * cols + dx + dw - 1 - inset)
+      }
+
+      const samples = border.filter((i) => i >= 0 && i < total)
+      let backdropCell = -1
+      let bestAgreement = 0
+      for (const a of samples) {
+        let agree = 0
+        for (const b of samples) if (colourDistance(a, b) <= 0.08) agree++
+        if (agree > bestAgreement) {
+          bestAgreement = agree
+          backdropCell = a
+        }
+      }
+
+      // Only key when the border is genuinely dominated by one colour, so a
+      // photograph without a flat backdrop is left alone.
+      const keyed =
+        keyTolerance > 0 && samples.length > 8 && bestAgreement / samples.length >= 0.4
+
+      // How much each cell counts as backdrop, 0 to 1. Smooth, so the hair
+      // edge against the backdrop blends instead of stair stepping.
+      const backdrop = new Float32Array(total)
+      if (keyed) {
+        const near = keyTolerance * 0.55
+        for (let i = 0; i < total; i++) {
+          const d = colourDistance(i, backdropCell)
+          if (d <= near) backdrop[i] = 1
+          else if (d < keyTolerance) {
+            const t = (d - near) / (keyTolerance - near)
+            backdrop[i] = 1 - t * t * (3 - 2 * t)
+          }
+        }
+      }
+
+      // Anything outside the drawn image is already paper and should stay that
+      // way rather than being dragged into the stretch below.
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          if (x < dx || x >= dx + dw || y < dy || y >= dy + dh) backdrop[y * cols + x] = 1
+        }
+      }
+
+      // A percentile stretch across the subject only. ASCII throws away so
+      // much detail that a source sitting in the middle of the range turns to
+      // mush without it, and including the backdrop would skew the ends.
+      const subject: number[] = []
+      for (let i = 0; i < total; i++) if (backdrop[i] < 0.5) subject.push(lum[i])
+      const sample = subject.length > 32 ? Float64Array.from(subject).sort() : null
+      const lo = sample ? sample[Math.floor(sample.length * 0.02)] : 0
+      const hi = sample ? sample[Math.floor(sample.length * 0.98)] : 1
       const span = hi - lo > 0.02 ? hi - lo : 1
-      for (let i = 0; i < total; i++) lum[i] = clamp((lum[i] - lo) / span, 0, 1)
+
+      for (let i = 0; i < total; i++) {
+        let v = clamp((lum[i] - lo) / span, 0, 1)
+        // Push away from mid grey, which is where a flat backdrop lands.
+        v = clamp(0.5 + (v - 0.5) * contrast, 0, 1)
+        // Blend to paper wherever the cell is backdrop.
+        lum[i] = v + (1 - v) * backdrop[i]
+      }
 
       const meanHue = ((Math.atan2(hueSin, hueCos) * 180) / Math.PI + 360) % 360
       const saturation = clamp(18 + (satSum / total) * 26, 18, 30)
@@ -533,7 +669,7 @@ export default function AsciiHero({
       window.removeEventListener('pointermove', onPointerMove)
       reduceMotion.removeEventListener('change', relayout)
     }
-  }, [src, fallbackSrc, gridColumns, rampCodes])
+  }, [src, fallbackSrc, gridColumns, rampCodes, fit, activeContrast, activeKeyTolerance])
 
   return (
     <div ref={wrapRef} className={className} aria-hidden="true">
@@ -556,6 +692,8 @@ type Tuning = {
   cursorRadius: number
   cursorStrength: number
   hueCycleSeconds: number
+  contrast: number
+  keyTolerance: number
   rampString: string
 }
 
@@ -567,6 +705,8 @@ const SLIDERS: { key: keyof Tuning; min: number; max: number; step: number }[] =
   { key: 'cursorRadius', min: 0, max: 40, step: 1 },
   { key: 'cursorStrength', min: 0, max: 1, step: 0.01 },
   { key: 'hueCycleSeconds', min: 5, max: 240, step: 1 },
+  { key: 'contrast', min: 0.5, max: 3, step: 0.05 },
+  { key: 'keyTolerance', min: 0, max: 0.6, step: 0.01 },
 ]
 
 function Controls({
