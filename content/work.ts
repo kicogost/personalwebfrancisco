@@ -23,9 +23,9 @@ export const work: WorkEntry[] = [
     start: 'May 2026',
     end: null,
     lines: [
-      'Grew revenue from $0 to $1M ARR in six months.',
-      'Managed 10 brands, reaching over 2 million LinkedIn impressions in three months.',
-      'Built the internal repo of agents and skills the team runs on, so a smaller team delivers the same service.',
+      'Grew revenue from $0 to $1M ARR in <6 months.',
+      '5+ million impressions generated on LinkedIn for select B2B SaaS founders.',
+      'Built the internal repo of agents and skills the whole business runs on.',
     ],
     proof: { label: 'proof of work', url: 'https://rallyup.team/' },
   },
