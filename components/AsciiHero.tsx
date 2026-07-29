@@ -10,6 +10,8 @@ export const DEFAULT_RAMP =
 
 export type AsciiHeroProps = {
   src: string
+  /** Used if `src` cannot be loaded, so a missing photo is not a blank hero. */
+  fallbackSrc?: string
   /** Grid width. 200 to 260 reads well on desktop. */
   columns?: number
   /** Spatial frequency of the drift. Larger values make finer grain. */
@@ -91,6 +93,7 @@ function hueAndSat(r: number, g: number, b: number): [number, number] {
 
 export default function AsciiHero({
   src,
+  fallbackSrc,
   columns = 220,
   noiseScale = 0.05,
   noiseSpeed = 0.15,
@@ -496,14 +499,27 @@ export default function AsciiHero({
     window.addEventListener('pointermove', onPointerMove, { passive: true })
     reduceMotion.addEventListener('change', relayout)
 
+    /** Resolves to a decoded image, dropping to the fallback if src fails. */
+    async function loadImage(): Promise<HTMLImageElement | null> {
+      for (const candidate of [src, fallbackSrc].filter(Boolean) as string[]) {
+        const img = new Image()
+        img.decoding = 'async'
+        img.src = candidate
+        try {
+          await img.decode()
+          return img
+        } catch {
+          // Try the fallback.
+        }
+      }
+      return null
+    }
+
     // Wait for the mono face before measuring, otherwise the cell is sized
-    // against the fallback and every glyph lands off its grid.
-    const img = new Image()
-    img.decoding = 'async'
-    img.src = src
-    Promise.all([img.decode().catch(() => undefined), document.fonts.ready]).then(() => {
-      if (disposed) return
-      image = img
+    // against the fallback face and every glyph lands off its grid.
+    Promise.all([loadImage(), document.fonts.ready]).then(([loaded]) => {
+      if (disposed || !loaded) return
+      image = loaded
       relayout()
     })
 
@@ -517,7 +533,7 @@ export default function AsciiHero({
       window.removeEventListener('pointermove', onPointerMove)
       reduceMotion.removeEventListener('change', relayout)
     }
-  }, [src, gridColumns, rampCodes])
+  }, [src, fallbackSrc, gridColumns, rampCodes])
 
   return (
     <div ref={wrapRef} className={className} aria-hidden="true">

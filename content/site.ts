@@ -8,11 +8,11 @@ export const site = {
   // Rendered in the bottom left of the frame, one word per line.
   nameLines: ['francisco', 'gost'],
 
-  role: 'Head of Ops and Customer Success at RallyUp',
+  role: 'Founding Chief of Staff at RallyUp',
   location: 'Madrid',
 
   description:
-    'Francisco Gost. Operations and customer success at RallyUp, in Madrid. Writes the Between Lines newsletter and builds small tools.',
+    'Francisco Gost. Founding chief of staff at RallyUp. Writes the Between Lines newsletter and builds small tools.',
 
   // Set once in Cinzel caps, in the optical centre of the hero. Placeholder
   // until Francisco chooses the final text. Use the interpunct as the
@@ -21,8 +21,15 @@ export const site = {
 
   // The hero renders this photograph as ASCII characters, which discards
   // almost all detail. It needs to read as clear light and dark shapes.
-  heroImage: '/hero-placeholder.png',
-  portrait: '/portrait-placeholder.png',
+  //
+  // public/francisco.jpg currently holds a generated stand-in at the right
+  // dimensions. Overwrite that one file with the real headshot, same name, and
+  // both the hero and the portrait pick it up with no code change. The
+  // fallbacks below only matter if that file is ever deleted.
+  heroImage: '/francisco.jpg',
+  portrait: '/francisco.jpg',
+  heroFallback: '/hero-placeholder.png',
+  portraitFallback: '/portrait-placeholder.png',
 
   // Drop a PDF in public/ and point at it to make the download link on /work
   // appear. Leave it null and the link is not rendered at all.

@@ -5,9 +5,11 @@ import Link from 'next/link'
  * offset from the fixed left rail, sitting over the dimmed hero.
  */
 export default function PageShell({
+  eyebrow,
   title,
   children,
 }: {
+  eyebrow: string
   title: string
   children: React.ReactNode
 }) {
@@ -17,9 +19,10 @@ export default function PageShell({
         ← home
       </Link>
 
-      {/* The nav marks the current section, so a visible title would only
-          repeat it. The document still needs the heading. */}
-      <h1 className="sr-only">{title}</h1>
+      <header className="mt-16">
+        <p className="eyebrow">{eyebrow}</p>
+        <h1 className="face-heading mt-5">{title}</h1>
+      </header>
 
       <div className="mt-12">{children}</div>
     </div>

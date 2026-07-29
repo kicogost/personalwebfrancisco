@@ -51,18 +51,20 @@ Append to the array in `content/work.ts`. Most recent first, so new entries go a
 ```ts
 {
   company: 'RallyUp',
-  role: 'head of ops and customer success',
-  start: '2024',
-  end: null,              // null renders as "present"
-  location: 'madrid',
+  tagline: 'AI-native B2B content agency',
+  role: 'founding chief of staff',
+  standing: 'employee no. 2',   // optional, sits next to the role
+  location: 'new york',
+  start: 'May 2026',
+  end: null,                    // null renders as "present"
   lines: [
     'One to three short lines. Sentences, not bullet points.',
   ],
-  url: 'https://rallyup.team',   // optional
+  proof: { label: 'proof of work', url: 'https://rallyup.team/' },  // optional
 }
 ```
 
-Roles, companies and locations are lowercase by convention. They render in the monospace utility face.
+The company name renders large in the monospace face, the tagline beneath it, then role, standing and location joined with interpuncts and set in small caps. Write `role`, `standing` and `location` in lowercase; the page uppercases them. The `lines` are prose, so they take normal sentence case and render in the serif.
 
 ### Adding a project
 
@@ -70,15 +72,17 @@ Append to the array in `content/projects.ts`.
 
 ```ts
 {
-  name: 'project name',
-  status: 'shipped june 2026',    // or 'in progress'
-  description: 'one sentence, lowercase, no full stop needed',
-  repo: 'https://github.com/...', // optional
-  live: 'https://...',            // optional
+  name: 'Health Operating System',
+  status: 'August 2026 – present',   // or 'in progress'
+  description: 'One sentence saying what the thing does.',
+  links: [
+    { label: 'github', url: 'https://github.com/...' },
+    { label: 'proof of work', url: 'https://...' },
+  ],
 }
 ```
 
-Both links are optional. If neither is present the entry renders without a link row.
+`links` takes any number of entries and each is labelled for what it actually is, so a project can point at a repo, a live site, an Instagram account, or nothing at all. Omit the field and the entry renders without a link row. Every link opens in a new tab and gets an arrow automatically.
 
 ### Writing the manifesto
 
@@ -94,9 +98,11 @@ cvPdf: '/francisco-gost-cv.pdf'
 
 Leave it as `null` and the download link disappears entirely.
 
-### Swapping the hero photo
+### Swapping the photo
 
-Replace the file in `public/` and update `heroImage` in `content/site.ts`.
+Overwrite `public/francisco.jpg`, keeping the same filename. Both the hero and the small portrait read from it and no code changes.
+
+That file currently holds a generated stand-in, not a real photograph. `content/site.ts` also carries `heroFallback` and `portraitFallback`, which only come into play if `francisco.jpg` is ever missing, so the page never renders a broken image.
 
 The hero renders the photo as ASCII characters, which throws away almost all detail. Pick something that reads as clear light and dark shapes when you squint at it. Faces work if the lighting is strong. Anything low contrast or busy turns to noise.
 

@@ -1,34 +1,48 @@
 export type WorkEntry = {
   company: string
+  /** One line describing the company itself, not the role. */
+  tagline: string
   role: string
-  start: string // "2024"
-  end: string | null // null renders as "present"
+  /** Anything worth sitting next to the role, such as "employee no. 2". */
+  standing?: string
   location: string
-  lines: string[] // one to three short lines, no bullets in the UI
-  url?: string
+  start: string // "May 2026"
+  end: string | null // null renders as "present"
+  lines: string[] // one to three short lines, no bullets in the data
+  proof?: { label: string; url: string }
 }
 
-// PLACEHOLDER CONTENT. Replace both entries with the real CV. Most recent
-// first, since the page renders the array in order.
+// Most recent first. The page renders the array in order.
 export const work: WorkEntry[] = [
   {
-    company: 'PLACEHOLDER company',
-    role: 'placeholder role',
-    start: '2024',
+    company: 'RallyUp',
+    tagline: 'AI-native B2B content agency',
+    role: 'founding chief of staff',
+    standing: 'employee no. 2',
+    location: 'new york',
+    start: 'May 2026',
     end: null,
-    location: 'madrid',
     lines: [
-      'One to three short lines describing the work. Sentences rather than bullet points.',
-      'The second line carries a specific outcome, if there is one worth naming.',
+      'Grew revenue from $0 to $1M ARR in six months.',
+      'Managed 10 brands, reaching over 2 million LinkedIn impressions in three months.',
+      'Built the internal repo of agents and skills the team runs on, so a smaller team delivers the same service.',
     ],
-    url: 'https://example.com',
+    proof: { label: 'proof of work', url: 'https://rallyup.team/' },
   },
   {
-    company: 'PLACEHOLDER earlier company',
-    role: 'placeholder earlier role',
-    start: '2021',
-    end: '2024',
+    company: 'Dcycle',
+    tagline: 'Series A B2B SaaS',
+    role: 'partnerships manager',
+    standing: 'employee no. 30',
     location: 'madrid',
-    lines: ['A single line is fine for older entries. Brevity reads as confidence.'],
+    start: 'Sep 2025',
+    end: 'May 2026',
+    lines: [
+      'Built the partnerships function from scratch.',
+      'Sourced $500K in directly attributable closed-won revenue.',
+      // TODO: replace $XM with the real pipeline figure.
+      'Drove 100+ qualified meetings booked and $XM in pipeline.',
+    ],
+    proof: { label: 'proof of work', url: 'https://dcycle.io/partners/' },
   },
 ]

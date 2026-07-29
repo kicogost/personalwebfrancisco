@@ -18,7 +18,11 @@ export default function HeroLayer() {
       className="hero-fade pointer-events-none fixed inset-0 -z-10 transition-opacity duration-700 ease-out"
       style={{ opacity: isHome ? 1 : 0.12 }}
     >
-      <AsciiHero src={site.heroImage} className="h-full w-full" />
+      <AsciiHero
+        src={site.heroImage}
+        fallbackSrc={site.heroFallback}
+        className="h-full w-full"
+      />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import PageShell from '@/components/PageShell'
+import RevealItem from '@/components/RevealItem'
 import { site } from '@/content/site'
 import { work } from '@/content/work'
 import { pageMetadata } from '@/lib/metadata'
@@ -12,46 +13,55 @@ export const metadata: Metadata = pageMetadata({
 
 export default function WorkPage() {
   return (
-    <PageShell title="Work">
+    <PageShell eyebrow="work" title="Work">
       <ol className="border-t border-rule">
-        {work.map((entry) => (
-          <li key={`${entry.company}-${entry.start}`} className="border-b border-rule py-8">
-            <div className="face-utility flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 lowercase">
-              <h2 className="font-normal">
-                {entry.role}
-                <span className="text-ink-muted">, </span>
-                {entry.url ? (
+        {work.map((entry, index) => {
+          const meta = [entry.role, entry.standing, entry.location].filter(Boolean).join(' · ')
+
+          return (
+            <RevealItem
+              key={`${entry.company}-${entry.start}`}
+              index={index}
+              className="border-b border-rule py-10"
+            >
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+                <h2 className="face-entry">{entry.company}</h2>
+                <p className="face-utility text-ink-muted">
+                  {entry.start} – {entry.end ?? 'present'}
+                </p>
+              </div>
+
+              <p className="face-utility mt-2 text-ink">{entry.tagline}</p>
+              <p className="face-meta mt-2">{meta}</p>
+
+              {/* Arrows rather than list markers, so the indent stays on the
+                  monospace grid. */}
+              <ul className="measure mt-6 space-y-3">
+                {entry.lines.map((line) => (
+                  <li key={line} className="face-body grid grid-cols-[1.5rem_1fr] items-baseline">
+                    <span aria-hidden="true" className="face-utility text-accent">
+                      →
+                    </span>
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {entry.proof ? (
+                <p className="face-utility mt-6 lowercase">
                   <a
-                    href={entry.url}
+                    href={entry.proof.url}
                     className="link"
                     target="_blank"
                     rel="noreferrer noopener"
                   >
-                    {entry.company}
+                    {entry.proof.label} ↗
                   </a>
-                ) : (
-                  entry.company
-                )}
-              </h2>
-
-              <p className="text-ink-muted">
-                <span>
-                  {entry.start} to {entry.end ?? 'present'}
-                </span>
-                <span aria-hidden="true"> · </span>
-                <span>{entry.location}</span>
-              </p>
-            </div>
-
-            <div className="face-body measure mt-4 text-ink">
-              {entry.lines.map((line) => (
-                <p key={line} className="mt-2 first:mt-0">
-                  {line}
                 </p>
-              ))}
-            </div>
-          </li>
-        ))}
+              ) : null}
+            </RevealItem>
+          )
+        })}
       </ol>
 
       {site.cvPdf ? (

@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 import { nav, site } from '@/content/site'
 
 /**
@@ -15,16 +16,21 @@ import { nav, site } from '@/content/site'
  */
 export default function SiteFrame() {
   const pathname = usePathname()
+  // Drops to the generated placeholder until the real headshot is saved to
+  // public/, so the frame never shows a broken image.
+  const [portrait, setPortrait] = useState<string>(site.portrait)
 
   return (
     <div className="relative z-20 flex flex-col gap-7 px-6 pt-8 md:fixed md:top-9 md:left-10 md:w-[var(--rail)] md:px-0 md:pt-0">
       <Link href="/" className="link inline-block w-fit" aria-label={`${site.name}, home`}>
         <Image
-          src={site.portrait}
+          src={portrait}
           alt=""
           width={72}
           height={72}
           priority
+          unoptimized
+          onError={() => setPortrait(site.portraitFallback)}
           className="h-16 w-16 object-cover md:h-[72px] md:w-[72px]"
         />
       </Link>
