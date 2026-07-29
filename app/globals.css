@@ -1,0 +1,205 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Design tokens. Five colours, three faces. Nothing else gets invented later.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  --color-paper: #fcfcfa;
+  --color-ink: #0e0e0c;
+  --color-ink-muted: #6b6b63;
+  --color-rule: #e4e2db;
+  --color-accent: #8a7c5e;
+
+  --font-utility: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-body: var(--font-garamond), Iowan Old Style, Palatino, Georgia, serif;
+  --font-display: var(--font-cinzel), Trajan Pro, Palatino, Georgia, serif;
+}
+
+/* Short aliases so the canvas and hand-written CSS can reach the same values
+   the Tailwind utilities use. One source of truth, above. */
+:root {
+  --paper: var(--color-paper);
+  --ink: var(--color-ink);
+  --ink-muted: var(--color-ink-muted);
+  --rule: var(--color-rule);
+  --accent: var(--color-accent);
+
+  /* Width of the fixed left rail, and where the content column starts. */
+  --rail: 15rem;
+  --gutter: 2.5rem;
+}
+
+/* The rail carries ink text straight over the hero. Where the photograph is
+   dark the two fight, so the characters are faded back under the rail only. */
+
+/* Below the breakpoint there is no rail, and the content runs down the middle
+   of the hero instead. The dense end of the ramp collects at the foot of the
+   image, which is exactly where the footer lands, so that is what gets faded. */
+@media (max-width: 767px) {
+  .hero-fade {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 1) 0,
+      rgb(0 0 0 / 1) 52%,
+      rgb(0 0 0 / 0.24) 82%,
+      rgb(0 0 0 / 0.14) 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 1) 0,
+      rgb(0 0 0 / 1) 52%,
+      rgb(0 0 0 / 0.24) 82%,
+      rgb(0 0 0 / 0.14) 100%
+    );
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-fade {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      rgb(0 0 0 / 0.3) 0,
+      rgb(0 0 0 / 0.62) 9rem,
+      rgb(0 0 0 / 1) 21rem
+    );
+    mask-image: linear-gradient(
+      to right,
+      rgb(0 0 0 / 0.3) 0,
+      rgb(0 0 0 / 0.62) 9rem,
+      rgb(0 0 0 / 1) 21rem
+    );
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    /* The hero is a fixed layer behind everything, so nothing here scrolls it. */
+    overflow-x: hidden;
+  }
+
+  /* Keyboard focus is always visible and always the accent colour. Mouse
+     clicks do not get a ring, hence :focus-visible rather than :focus. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The three faces. Each bundles enough properties to be worth a class.
+   --------------------------------------------------------------------------- */
+
+/* Nav, name, dates, project metadata. The face carries no text-transform,
+   because it is also used for the footer line, which is prose and keeps its
+   sentence case. Add Tailwind's `lowercase` where the design wants it. */
+.face-utility {
+  font-family: var(--font-utility);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+}
+
+.face-utility-sm {
+  font-size: 0.75rem;
+  letter-spacing: 0.09em;
+}
+
+/* Manifesto, work descriptions, essay summaries. */
+.face-body {
+  font-family: var(--font-body);
+  font-size: 1.1875rem;
+  line-height: 1.65;
+  letter-spacing: 0.002em;
+}
+
+/* The motto, and only the motto. If this appears in a heading, it has been
+   overused. */
+.face-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.34em;
+  font-weight: 400;
+  /* The tracking adds space after the final glyph, which throws off optical
+     centring. Pull it back by half. */
+  text-indent: 0.34em;
+}
+
+/* Reading measure. 62 characters, as specified. */
+.measure {
+  max-width: 62ch;
+}
+
+/* ---------------------------------------------------------------------------
+   Links. Ink until hovered, then an accent underline. No colour change, so the
+   page stays ink on paper.
+   --------------------------------------------------------------------------- */
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1px;
+  transition: background-size 220ms ease;
+  padding-bottom: 1px;
+}
+
+.link:hover,
+.link:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* The nav marks the current section with a persistent rule rather than a
+   colour change. */
+.link[aria-current='page'] {
+  background-size: 100% 1px;
+}
+
+/* ---------------------------------------------------------------------------
+   Motion. Honoured everywhere, not only in the hero.
+   --------------------------------------------------------------------------- */
+
+.rise {
+  animation: rise 520ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .rise {
+    animation: none;
+  }
+}
